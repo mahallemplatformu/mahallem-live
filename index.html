@@ -13,7 +13,7 @@ body{
 }
 
 .container{
-    max-width:1000px;
+    max-width:1100px;
     margin:40px auto;
     display:flex;
     gap:20px;
@@ -44,24 +44,30 @@ body{
 </style>
 
 </head>
+
 <body>
 
 <div class="container">
 
-<div class="card">
-<div class="number" id="completedHelp">0</div>
-<div class="title">Tamamlanan Yardım</div>
-</div>
+    <div class="card">
+        <div class="number" id="requests">0</div>
+        <div class="title">Oluşturulan Talepler</div>
+    </div>
 
-<div class="card">
-<div class="number" id="volunteers">0</div>
-<div class="title">Gönüllü</div>
-</div>
+    <div class="card">
+        <div class="number" id="completedHelp">0</div>
+        <div class="title">Tamamlanan Yardımlar</div>
+    </div>
 
-<div class="card">
-<div class="number" id="sharedItems">0</div>
-<div class="title">Eşya Paylaşımı</div>
-</div>
+    <div class="card">
+        <div class="number" id="sharedItems">0</div>
+        <div class="title">Eşya Paylaşımı</div>
+    </div>
+
+    <div class="card">
+        <div class="number" id="lostPets">0</div>
+        <div class="title">Kayıplar ve Sahiplendirme Başvuruları</div>
+    </div>
 
 </div>
 
@@ -83,46 +89,40 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 function animateValue(id, end){
+    const element = document.getElementById(id);
+    const start = parseInt(element.innerText) || 0;
 
-    const element=document.getElementById(id);
-    const start=parseInt(element.innerText)||0;
+    let current = start;
+    const increment = (end - start) / 30;
 
-    let current=start;
+    const timer = setInterval(() => {
+        current += increment;
 
-    const increment=(end-start)/30;
-
-    const timer=setInterval(()=>{
-
-        current+=increment;
-
-        if(
-            (increment>0 && current>=end) ||
-            (increment<0 && current<=end)
-        ){
-            current=end;
+        if (
+            (increment > 0 && current >= end) ||
+            (increment < 0 && current <= end)
+        ) {
+            current = end;
             clearInterval(timer);
         }
 
-        element.innerText=Math.round(current);
-
-    },20);
-
+        element.innerText = Math.round(current);
+    }, 20);
 }
 
-const statsRef=doc(db,"statistics","global");
+const statsRef = doc(db, "stats", "live");
 
-onSnapshot(statsRef,(docSnap)=>{
+onSnapshot(statsRef, (docSnap) => {
+    if (docSnap.exists()) {
 
-    if(docSnap.exists()){
+        const data = docSnap.data();
 
-        const data=docSnap.data();
-
-        animateValue("completedHelp",data.completedHelp || 0);
-        animateValue("volunteers",data.volunteers || 0);
-        animateValue("sharedItems",data.sharedItems || 0);
+        animateValue("requests", data["Oluşturulan Talepler"] || 0);
+        animateValue("completedHelp", data["Tamamlanan Yardımlar"] || 0);
+        animateValue("sharedItems", data["Eşya Paylaşımı"] || 0);
+        animateValue("lostPets", data["Kayıplar ve Sahiplendirme Başvuruları"] || 0);
 
     }
-
 });
 
 </script>

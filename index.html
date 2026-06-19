@@ -35,21 +35,16 @@
 
     const statsRef = doc(db, "istatistikler", "global");
 
-    // Sayıların artış efekti için fonksiyon
     window.animateValue = function(id, val) {
         document.getElementById(id).innerText = val;
     };
 
- // ... Diğer firebase kodların aynı kalsın ...
 
-// DOM tamamen yüklendikten sonra çalışmaya başla
 document.addEventListener("DOMContentLoaded", () => {
     onSnapshot(statsRef, (docSnap) => {
         if (docSnap.exists()) {
             const data = docSnap.data();
-            
-            // Şimdi elemanları bulabilir çünkü sayfa tamamen hazır
-            const elRequests = document.getElementById("requests");
+                        const elRequests = document.getElementById("requests");
             const elCompleted = document.getElementById("completedHelp");
             const elShared = document.getElementById("sharedItems");
             const elLost = document.getElementById("lostPets");

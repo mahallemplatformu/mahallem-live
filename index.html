@@ -40,15 +40,29 @@
         document.getElementById(id).innerText = val;
     };
 
+ // ... Diğer firebase kodların aynı kalsın ...
+
+// DOM tamamen yüklendikten sonra çalışmaya başla
+document.addEventListener("DOMContentLoaded", () => {
     onSnapshot(statsRef, (docSnap) => {
         if (docSnap.exists()) {
             const data = docSnap.data();
-            animateValue("requests", data["Oluşturulan Talepler"] || 0);
-            animateValue("completedHelp", data["Tamamlanan Yardımlar"] || 0);
-            animateValue("sharedItems", data["Eşya Paylaşımı"] || 0);
-            animateValue("lostPets", data["Kayıplar ve Sahiplendirme Başvuruları"] || 0);
+            
+            // Şimdi elemanları bulabilir çünkü sayfa tamamen hazır
+            const elRequests = document.getElementById("requests");
+            const elCompleted = document.getElementById("completedHelp");
+            const elShared = document.getElementById("sharedItems");
+            const elLost = document.getElementById("lostPets");
+
+            if(elRequests) elRequests.innerText = data["Oluşturulan Talepler"] || 0;
+            if(elCompleted) elCompleted.innerText = data["Tamamlanan Yardımlar"] || 0;
+            if(elShared) elShared.innerText = data["Eşya Paylaşımı"] || 0;
+            if(elLost) elLost.innerText = data["Kayıplar ve Sahiplendirme Başvuruları"] || 0;
+            
+            console.log("Veri güncellendi!");
         }
     });
+});
 </script>
 </body>
 </html>

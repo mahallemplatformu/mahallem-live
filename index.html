@@ -38,15 +38,15 @@
     const statsRef = doc(db, "istatistikler", "global");
 
     onSnapshot(statsRef, (docSnap) => {
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            // Firebase alan isimleri ile birebir eşleşme
-            document.getElementById("requests").innerText = data["Oluşturulan Talepler"] || 0;
-            document.getElementById("completedHelp").innerText = data["Tamamlanan Yardımlar"] || 0;
-            document.getElementById("sharedItems").innerText = data["Eşya Paylaşımı"] || 0;
-            document.getElementById("lostPets").innerText = data["Kayıplar ve Sahiplendirme Başvuruları"] || 0;
-        }
-    });
-</script>
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        
+        // Buradaki anahtarlar Firebase'deki alan isimleri ile %100 aynı olmalı
+        animateValue("requests", data["Oluşturulan Talepler"] || 0);
+        animateValue("completedHelp", data["Tamamlanan Yardımlar"] || 0);
+        animateValue("sharedItems", data["Eşya Paylaşımı"] || 0);
+        animateValue("lostPets", data["Kayıplar ve Sahiplendirme Başvuruları"] || 0);
+    }
+});
 </body>
 </html>

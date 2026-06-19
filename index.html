@@ -1,54 +1,161 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <title>Mahallem İstatistikleri</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mahallem Canlı İstatistikleri</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f5f7fb;
+}
+
+.container{
+    max-width:1200px;
+    margin:50px auto;
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.card{
+    width:220px;
+    background:#fff;
+    border-radius:18px;
+    padding:30px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.number{
+    font-size:42px;
+    font-weight:bold;
+    color:#2E7D32;
+}
+
+.title{
+    margin-top:10px;
+    font-size:18px;
+    color:#666;
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
-    <div id="requests">0</div>
-    <div id="completedHelp">0</div>
-    <div id="sharedItems">0</div>
-    <div id="lostPets">0</div>
+
+<div class="card">
+<div class="number" id="requests">0</div>
+<div class="title">Oluşturulan Talepler</div>
+</div>
+
+<div class="card">
+<div class="number" id="completedHelp">0</div>
+<div class="title">Tamamlanan Yardımlar</div>
+</div>
+
+<div class="card">
+<div class="number" id="sharedItems">0</div>
+<div class="title">Eşya Paylaşımı</div>
+</div>
+
+<div class="card">
+<div class="number" id="lostPets">0</div>
+<div class="title">Kayıplar ve Sahiplendirme Başvuruları</div>
+</div>
+
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDs4_rVKTZ88lA8KN11Hp-U0Wwsic6vSiw",
-        authDomain: "mahallem-5b774.firebaseapp.com",
-        projectId: "mahallem-5b774",
-        storageBucket: "mahallem-5b774.firebasestorage.app",
-        messagingSenderId: "209961116023",
-        appId: "1:209961116023:web:f2e96b867827502e3e4172"
-    };
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+const firebaseConfig = {
+apiKey: "AIzaSyDs4_rVKTZ88lA8KN11Hp-U0Wwsic6vSiw",
+authDomain: "mahallem-5b774.firebaseapp.com",
+projectId: "mahallem-5b774",
+storageBucket: "mahallem-5b774.firebasestorage.app",
+messagingSenderId: "209961116023",
+appId: "1:209961116023:web:f2e96b867827502e3e4172"
+};
 
-    // SENİN VERİTABANI YOLUN: istatistikler -> küresel
-    const statsRef = doc(db, "istatistikler", "küresel");
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    onSnapshot(statsRef, (docSnap) => {
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            
-            // Veritabanındaki alan isimleriyle birebir eşleşme
-            document.getElementById("requests").innerText = data["Oluşturulan Talepler"] || 0;
-            document.getElementById("completedHelp").innerText = data["Tamamlanan Yardımlar"] || 0;
-            document.getElementById("sharedItems").innerText = data["eşya paylaşımı"] || 0;
-            document.getElementById("lostPets").innerText = data["Kayıplar ve Sahiplendirme Başvuruları"] || 0;
-            
-            console.log("Veri başarıyla güncellendi:", data);
-        } else {
-            console.log("Belge bulunamadı, adres yolunu kontrol et!");
+function animateValue(id, end){
+
+    const el = document.getElementById(id);
+
+    if(!el) return;
+
+    const start = Number(el.textContent) || 0;
+
+    const duration = 700;
+
+    const step = (end-start)/30;
+
+    let current = start;
+
+    const timer = setInterval(()=>{
+
+        current += step;
+
+        if(
+            (step>=0 && current>=end) ||
+            (step<0 && current<=end)
+        ){
+            current=end;
+            clearInterval(timer);
         }
-    }, (error) => {
-        console.error("Firebase Hatası: ", error);
-    });
+
+        el.textContent=Math.round(current);
+
+    },duration/30);
+
+}
+
+const statsRef = doc(db,"statistics","global");
+
+onSnapshot(
+statsRef,
+
+(docSnap)=>{
+
+    console.log("Firestore bağlandı.");
+
+    if(docSnap.exists()){
+
+        const data=docSnap.data();
+
+        console.log(data);
+
+        animateValue("requests",data["Oluşturulan Talepler"]||0);
+        animateValue("completedHelp",data["Tamamlanan Yardımlar"]||0);
+        animateValue("sharedItems",data["Eşya Paylaşımı"]||0);
+        animateValue("lostPets",data["Kayıplar ve Sahiplendirme Başvuruları"]||0);
+
+    }else{
+
+        console.log("Belge bulunamadı.");
+
+    }
+
+},
+
+(error)=>{
+
+    console.error(error);
+
+}
+
+);
+
 </script>
+
 </body>
 </html>

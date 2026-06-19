@@ -1,5 +1,4 @@
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -17,40 +16,20 @@ const db = getFirestore(app);
 
 function animateValue(id, end){
     const element = document.getElementById(id);
-    if (!element) return; // Hata almamak için ek kontrol
-    const start = parseInt(element.innerText) || 0;
-
-    let current = start;
-    const increment = (end - start) / 30;
-
-    const timer = setInterval(() => {
-        current += increment;
-
-        if (
-            (increment > 0 && current >= end) ||
-            (increment < 0 && current <= end)
-        ) {
-            current = end;
-            clearInterval(timer);
-        }
-
-        element.innerText = Math.round(current);
-    }, 20);
+    if (!element) return;
+    element.innerText = end; // Animasyonu basitleştirdik, direkt değeri yazsın
 }
 
-// Firebase'deki koleksiyon ve belge yolu ile eşleştirildi
+// Koleksiyon yolu: "istatistikler" -> "küresel"
 const statsRef = doc(db, "istatistikler", "küresel");
 
 onSnapshot(statsRef, (docSnap) => {
     if (docSnap.exists()) {
         const data = docSnap.data();
-
-        // Firebase'deki alan isimleriyle birebir eşleştirildi
-        animateValue("requests", data["Uygulanan Talepler"] || 0);
+        animateValue("requests", data["Oluşturulan Talepler"] || 0);
         animateValue("completedHelp", data["Tamamlanan Yardımlar"] || 0);
-        animateValue("sharedItems", data["paylaşılan öğeler"] || 0);
+        animateValue("sharedItems", data["Eşya Paylaşımı"] || 0);
         animateValue("lostPets", data["Kayıplar ve Sahiplendirme Başvuruları"] || 0);
     }
 });
-
 </script>
